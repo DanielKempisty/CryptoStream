@@ -20,7 +20,7 @@ Projekt buduje pipeline, który:
 
 ## Architektura
 
-![Diagram architektury](./pipeline-architecture.png)
+![Diagram](pipeline_architecture.png)
 
 
 Przepływ danych:
