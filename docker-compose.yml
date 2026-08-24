@@ -11,7 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   kafka-1:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -25,8 +25,9 @@ services:
       - "9094:9094"
     volumes:
       - kafka1_data:/var/lib/kafka/data
+
   kafka-2:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     environment:
       KAFKA_NODE_ID: 2
       KAFKA_PROCESS_ROLES: broker,controller
@@ -40,8 +41,9 @@ services:
       - "9095:9094"
     volumes:
       - kafka2_data:/var/lib/kafka/data
+
   kafka-3:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     environment:
       KAFKA_NODE_ID: 3
       KAFKA_PROCESS_ROLES: broker,controller
@@ -55,8 +57,9 @@ services:
       - "9096:9094"
     volumes:
       - kafka3_data:/var/lib/kafka/data
+
   kafka-ui:
-    image: ghcr.io/kafbat/kafka-ui:latest
+    image: ghcr.io/kafbat/kafka-ui:v1.5.0
     ports:
       - "8080:8080"
     environment:
@@ -68,8 +71,36 @@ services:
       - kafka-2
       - kafka-3
 
+
+  jobmanager:
+    image: flink:2.2.1-scala_2.12-java17
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+    volumes:
+      - flink_data:/opt/flink/data
+
+
+  taskmanager:
+    image: flink:2.2.1-scala_2.12-java17
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    volumes:
+      - flink_data:/opt/flink/data
+
 volumes:
   postgres_data:
   kafka1_data:
   kafka2_data:
   kafka3_data:
+  flink_data:
