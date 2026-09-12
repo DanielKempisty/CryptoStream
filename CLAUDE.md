@@ -94,6 +94,99 @@ Poniższe zasady są nadrzędne wobec zwykłej pomocności:
 7. **Sekrety zawsze przez `.env`**, dodany do `.gitignore`, z
    `.env.example` jako dokumentacją struktury (bez realnych wartości).
 
+8. **Każda zmiana — kodu, plików, konfiguracji, wpisów w Notion —
+   wymaga mojej zgody zanim zostanie wykonana.** Zawsze najpierw
+   przedstaw propozycję (diff / treść) i poczekaj na potwierdzenie,
+   nawet dla drobnych rzeczy.
+
+## Planowanie i notatki (Notion)
+
+Plan projektu (TODO) i notatki z nauki prowadzone są w Notion, nie tu:
+- Plan/TODO: https://app.notion.com/p/3ac34a300513802d8ae4ebb7927f9dfa
+- Notatki: https://app.notion.com/p/3ac34a30051380cd99a8c50356048dc2
+
+Zasady:
+- Claude aktualizuje TODO i notatki **tylko za zgodą autora** — zawsze
+  proponuje treść przed zapisem.
+- Claude pilnuje zgodności bieżącej pracy z planem w Notion i zwraca
+  uwagę, gdy praca odjeżdża od planu bez podjętej decyzji.
+- Claude może przypominać o zapisaniu notatki, gdy pojawi się
+  nietrywialna decyzja/nauka, nawet jeśli autor o tym nie poprosi.
+- **Pod żadnym pozorem Claude nie usuwa niczego w Notion** — żadnych
+  notatek, punktów TODO, sekcji, podstron. Usuwanie treści z Notion
+  robi wyłącznie autor, ręcznie. Dotyczy to też pośredniego usuwania
+  (np. nadpisania treści, które usunęłoby coś istniejącego) —
+  dozwolone jest wyłącznie dopisywanie/edycja za zgodą, nigdy kasowanie.
+
+### Styl notatek
+
+W Notion współistnieją dwa różne gatunki notatek — nowe notatki mają
+naśladować ten sam wzorzec, nie wymyślać nowego formatu.
+
+**A. Notatki decyzyjne** (jedna notatka toggle na temat/komponent,
+np. "Postgres w Dockerze", "Kafka w Dockerze") — struktura:
+1. Cel/Kontekst — co i po co się robi
+2. Decyzja — z uzasadnieniem; jeśli były rozważane alternatywy, krótko
+   dlaczego odrzucone
+3. Konfiguracja — pełny, działający fragment kodu/configu
+4. Wyjaśnienie kluczowych elementów — linijka po linijce, co dana
+   opcja robi i **dlaczego** akurat tak, nie tylko co robi
+5. (jeśli wystąpił błąd) Napotkany problem — dokładny tekst błędu →
+   Diagnoza (przyczyna) → Rozwiązanie krok po kroku
+6. Weryfikacja — jak sprawdzić, że faktycznie działa
+7. Wniosek na przyszłość / Do zapamiętania — uogólniona lekcja, nie
+   tylko podsumowanie kroków
+
+Dodatkowo: tabele przy porównaniach dwóch podejść, analogie przy
+trudnych konceptach, świadome odniesienia do wcześniej poznanych
+narzędzi (np. "dlaczego Postgres tego nie potrzebuje, a Kafka tak").
+
+**B. Crash-course'y** (samouczek do nowego narzędzia, ponumerowany
+program, np. "Kafka crash-course" → moduły 1.1, 1.2, ...) — struktura
+per moduł:
+1. Teoria — krótkie wprowadzenie konceptu
+2. Komenda/przykład z wyjaśnieniem każdej flagi/opcji
+3. Do zapamiętania — kluczowy wniosek modułu
+4. Zadania — 2-3 ćwiczenia do samodzielnego rozwiązania, często
+   każące porównać zachowanie z wcześniej poznanym narzędziem
+5. Rozwiązania i wyjaśnienia — nie tylko komenda-odpowiedź, ale pełna
+   analiza (szczególnie gdy ćwiczenie odsłania jakąś pułapkę/gotchę)
+
+Wspólne dla obu gatunków: notatki po polsku, nazwy narzędzi/komend/
+identyfikatorów/kluczy configu zostają w oryginale (angielski, inline
+code); pogrubienie na kluczowych terminach; toggle jako podstawowy
+blok organizacyjny (H1 = temat, zagnieżdżone nagłówki = podtematy).
+
+### Formatowanie (składnia Notion)
+
+- **Temat notatki = toggle heading H1:** `# Tytuł notatki {toggle="true"}`.
+  Każdy crash-course to też jeden taki toggle (`# Kafka crash-course {toggle="true"}`).
+- **Podsekcje zagnieżdżone przez wcięcie (tab)** pod nagłówkiem nadrzędnym.
+  Dłuższe/bardziej złożone notatki (np. "Kafka w Dockerze") zagnieżdżają
+  same podsekcje jako kolejne toggle heading: `## Nazwa podsekcji {toggle="true"}`
+  — dzięki temu notatka jest zwijalna po sekcjach, nie trzeba scrollować
+  całości. Krótsze notatki (np. "Środowisko Pythona") używają zwykłych,
+  nie-zwijanych nagłówków `## Nazwa` dla tych samych podsekcji (Problem,
+  Decyzja, Diagnostyka, Rozwiązanie) — bo krótka notatka nie potrzebuje
+  dodatkowej warstwy zwijania.
+- **Trzeci poziom** (`### Nazwa`) dla podpunktów wewnątrz podsekcji
+  (np. "### Kluczowe elementy", "### Przez terminal" vs "### Przez VS Code"),
+  zwykle bez toggle — to już najniższy poziom, nie ma co dalej zwijać.
+- **`---` (divider)** między sąsiednimi toggle-podsekcjami tego samego
+  poziomu, dla wizualnego oddechu.
+- **Bloki kodu** zawsze z językiem: ```bash, ```sql, ```yaml, ```python,
+  a output/błędy komend jako ```plain text — nigdy goły blok bez języka.
+- **Tabele** przy porównaniach dwóch-trzech wariantów (kolumny = warianty
+  lub cechy, wiersze = druga oś porównania) — nie prozą, gdy da się to
+  zestawić w tabeli.
+- **`<br>` zamiast zwykłego entera** w środku akapitu (żeby nie rozbijać
+  jednego bloku tekstu na kilka oddzielnych bloków w Notion) — dotyczy
+  tylko wielolinijkowych akapitów prozy, nie bloków kodu.
+- **Pogrubienie** (`**tekst**`) na pierwszym wprowadzeniu kluczowego
+  terminu/nazwy opcji w danym akapicie, nie na całych zdaniach.
+- **Inline code** (`` `tekst` ``) na każdej nazwie pliku, komendzie,
+  kluczu configu, wersji, identyfikatorze — nigdy zwykłym tekstem.
+
 ## Konwencje projektu
 
 - **Branche:** `typ/krótki-opis` (kebab-case), np. `feature/kafka-producer`,
