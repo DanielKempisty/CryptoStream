@@ -22,10 +22,12 @@ pipeline'u samodzielnie.
 
 ```
 Producer (Python, Binance WebSocket)
-    → Kafka (3 brokery, KRaft)
+    → Kafka (3 brokery, KRaft) — topic wejściowy (surowe trades)
     → Flink SQL (parsing, tabelaryzacja, agregacje)
+    → Kafka — topic wyjściowy (dane przetworzone)
+    → Kafka Connect
         → Elasticsearch → Kibana (dashboard near real-time)
-        → SQL Server / Postgres (dane stabelaryzowane, analizy historyczne)
+        → Postgres (dane stabelaryzowane, analizy historyczne)
 ```
 
 Całość w Docker Compose, jeden plik dla całego stacku.
@@ -45,9 +47,11 @@ Całość w Docker Compose, jeden plik dla całego stacku.
 | Producent | Python | 3.12.7 (przez pyenv) |
 | Message broker | Apache Kafka (KRaft, 3 brokery) | 4.3.1 |
 | UI do Kafki | Kafbat UI | v1.5.0 |
-| Przetwarzanie strumieniowe | Flink SQL (PyFlink) | TBD |
+| Przetwarzanie strumieniowe | Flink SQL (PyFlink) | 2.2.1 |
+| Notebook do Flink SQL | JupyterLab + PyFlink | apache-flink==2.2.1 |
+| Dostawa do sinków | Kafka Connect | TBD |
 | Baza relacyjna | PostgreSQL | 16.10 |
-| Wyszukiwanie / dashboard | Elasticsearch + Kibana | TBD |
+| Wyszukiwanie / dashboard | Elasticsearch + Kibana | 9.5.2 |
 | Konteneryzacja | Docker Compose | — |
 
 ## KRYTYCZNE ZASADY PRACY — PRZECZYTAJ PRZED KAŻDĄ SESJĄ
@@ -98,7 +102,7 @@ Poniższe zasady są nadrzędne wobec zwykłej pomocności:
   `feat: add kafka producer for binance trade stream`
 - **Branch główny:** `main` — powinien zawsze być w stanie działającym
 - **Wolumeny Docker:** named volumes dla danych baz (Postgres, Kafka,
-  SQL Server), nie bind mounty — unika problemów z uprawnieniami plików
+  Elasticsearch), nie bind mounty — unika problemów z uprawnieniami plików
 - **Środowisko Python:** `pyenv local` (wersja projektu) + `venv`
   (izolacja zależności), w tej kolejności
 
@@ -119,6 +123,13 @@ CRYPTO_STREAM_PROJECT/
 - KRaft zamiast Zookeeper (Kafka 4.0+ nie wspiera już Zookeepera)
 - Trzy brokery Kafki (nie jeden, nie więcej) — mikro-klaster do nauki
   replikacji/partycjonowania
-- Fan-out z Flinka do dwóch sinków (Elasticsearch + Postgres/SQL
-  Server), nie osobny konsument z Kafki bezpośrednio do bazy
+- Flink pisze wynik na wyjściowy topic Kafki, nie bezpośrednio do
+  Elasticsearch/Postgresa. Fan-out do obu baz robi Kafka Connect
+  (nie Flink). Powód: oficjalny konektor Elasticsearch dla Flinka
+  jest utrzymywany tylko do wersji ES 7.x, więc każda nowsza wersja
+  ES wymagałaby albo cofania jej do EOL-owanej wersji, albo pisania
+  własnego sinka — Kafka Connect ma aktywnie utrzymywany konektor ES
+  i rozwiązuje to bez kompromisów wersyjnych. Flink SQL dalej robi
+  100% przetwarzania (parsing, agregacje) — zmienia się tylko
+  mechanizm dostawy wyniku.
 - MinIO/data lake świadomie odłożone na "rozszerzenia po MVP"

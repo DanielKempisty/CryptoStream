@@ -88,6 +88,17 @@ services:
     ports:
       - "5601:5601"
 
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    depends_on:
+      - jobmanager
+
 volumes:
   postgres_data:
   kafka_data:
