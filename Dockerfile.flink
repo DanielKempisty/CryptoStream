@@ -2,3 +2,6 @@ FROM flink:2.2.1-scala_2.12-java17
 
 RUN curl -o /opt/flink/lib/flink-sql-connector-kafka.jar \
     https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.2/flink-sql-connector-kafka-5.0.0-2.2.jar
+
+RUN curl -o /opt/flink/lib/flink-sql-connector-elasticsearch.jar \
+    https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-elasticsearch9/2.0.0-2.0/flink-sql-connector-elasticsearch9-2.0.0-2.0.jar
