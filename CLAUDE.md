@@ -51,7 +51,7 @@ Całość w Docker Compose, jeden plik dla całego stacku.
 | Notebook do Flink SQL | JupyterLab + PyFlink | apache-flink==2.2.1 |
 | Dostawa do sinków | Kafka Connect | TBD |
 | Baza relacyjna | PostgreSQL | 16.10 |
-| Wyszukiwanie / dashboard | Elasticsearch + Kibana | 9.5.2 |
+| Wyszukiwanie / dashboard | Elasticsearch + Kibana | 8.19.21 |
 | Konteneryzacja | Docker Compose | — |
 
 ## KRYTYCZNE ZASADY PRACY — PRZECZYTAJ PRZED KAŻDĄ SESJĄ
@@ -221,10 +221,15 @@ CRYPTO_STREAM_PROJECT/
 - Flink pisze wynik na wyjściowy topic Kafki, nie bezpośrednio do
   Elasticsearch/Postgresa. Fan-out do obu baz robi Kafka Connect
   (nie Flink). Powód: oficjalny konektor Elasticsearch dla Flinka
-  jest utrzymywany tylko do wersji ES 7.x, więc każda nowsza wersja
-  ES wymagałaby albo cofania jej do EOL-owanej wersji, albo pisania
-  własnego sinka — Kafka Connect ma aktywnie utrzymywany konektor ES
-  i rozwiązuje to bez kompromisów wersyjnych. Flink SQL dalej robi
-  100% przetwarzania (parsing, agregacje) — zmienia się tylko
-  mechanizm dostawy wyniku.
+  jest utrzymywany tylko do wersji ES 7.x. Kafka Connect ma aktywnie
+  utrzymywany konektor ES, ale (odkryte praktycznie, nie tylko
+  teoretycznie) **on też ma sufit wersji ES** — oficjalnie wspiera
+  tylko 7.x/8.x, ES 9.x nie jest jeszcze obsługiwany (otwarte,
+  nierozwiązane zgłoszenie confluentinc/kafka-connect-elasticsearch#847).
+  Stąd decyzja o zejściu z Elasticsearch/Kibana do wersji **8.19.21**
+  (patrz tabela wersji wyżej) zamiast pierwotnie planowanej 9.5.2 —
+  to nie jest "bez kompromisów wersyjnych", jak pierwotnie zakładano,
+  tylko mniejszy kompromis niż wymuszałby konektor Flinka (7.x).
+  Flink SQL dalej robi 100% przetwarzania (parsing, agregacje) —
+  zmienia się tylko mechanizm dostawy wyniku.
 - MinIO/data lake świadomie odłożone na "rozszerzenia po MVP"

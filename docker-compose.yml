@@ -67,7 +67,7 @@ services:
       - flink_data:/opt/flink/data
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.5.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.21
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -78,7 +78,7 @@ services:
       - elasticsearch_data:/usr/share/elasticsearch/data
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:9.5.2
+    image: docker.elastic.co/kibana/kibana:8.19.21
     depends_on:
       - elasticsearch
     environment:
@@ -96,6 +96,36 @@ services:
       - ./notebooks:/home/jovyan/work
     depends_on:
       - jobmanager
+
+  kafka-connect:
+    build:
+      context: .
+      dockerfile: Dockerfile.connect
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_GROUP_ID: kafka-connect-cluster
+      CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: _connect-status
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
+      CONNECT_PLUGIN_PATH: /usr/share/confluent-hub-components
+      CONNECT_CONFIG_PROVIDERS: env
+      CONNECT_CONFIG_PROVIDERS_ENV_CLASS: org.apache.kafka.common.config.provider.EnvVarConfigProvider
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - kafka
+      - elasticsearch
+      - postgres
 
 volumes:
   postgres_data:
