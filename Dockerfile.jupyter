@@ -1,0 +1,22 @@
+FROM python:3.12-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-21-jre-headless curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    jupyterlab \
+    jupyterlab-lsp \
+    apache-flink==2.2.1
+
+RUN PYFLINK_LIB=$(python -c "import pyflink, os; print(os.path.join(os.path.dirname(pyflink.__file__), 'lib'))") \
+    && curl -o "$PYFLINK_LIB/flink-sql-connector-kafka.jar" \
+       https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.2/flink-sql-connector-kafka-5.0.0-2.2.jar \
+    && curl -o "$PYFLINK_LIB/flink-sql-avro-confluent-registry.jar" \
+       https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-avro-confluent-registry/2.2.1/flink-sql-avro-confluent-registry-2.2.1.jar
+
+COPY jupyter_startup/00-flink-setup.py /root/.ipython/profile_default/startup/00-flink-setup.py
+
+WORKDIR /home/jovyan/work
+
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''"]

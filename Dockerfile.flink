@@ -1,0 +1,7 @@
+FROM flink:2.2.1-scala_2.12-java17
+
+RUN curl -o /opt/flink/lib/flink-sql-connector-kafka.jar \
+    https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.2/flink-sql-connector-kafka-5.0.0-2.2.jar
+
+RUN curl -o /opt/flink/lib/flink-sql-avro-confluent-registry.jar \
+    https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-avro-confluent-registry/2.2.1/flink-sql-avro-confluent-registry-2.2.1.jar

@@ -29,14 +29,16 @@ Przepływ danych:
    wysyła je na topic Kafki.
 2. **Kafka** — bufor/broker, topic `trades`, oddziela producenta od dalszego przetwarzania.
 3. **Flink SQL** — konsumuje z Kafki, parsuje i tabelaryzuje surowy JSON (rzutowanie typów,
-   ewentualne agregacje w oknach czasowych), a wynik rozdziela do dwóch sinków (fan-out):
+   ewentualne agregacje w oknach czasowych), a wynik zapisuje z powrotem na wyjściowy topic Kafki.
+4. **Kafka Connect** — odbiera z wyjściowego topicu i dostarcza dane do dwóch miejsc (fan-out
+   po stronie dostawy, nie przetwarzania):
    - **Elasticsearch → Kibana** — dane trafiają do Elasticsearch, Kibana buduje na tym
      dashboard near real-time do monitorowania rynku na żywo.
-   - **SQL Server** — dane stabelaryzowane trafiają do trwałego, relacyjnego magazynu,
-     do analiz historycznych i zapytań ad-hoc (SQL, ewentualnie Power BI).
+   - **Postgres** — dane stabelaryzowane trafiają do trwałego, relacyjnego magazynu,
+     do analiz historycznych i zapytań ad-hoc.
 
-Całość uruchomiona w Docker Compose — każdy komponent (Kafka, Flink, Elasticsearch, Kibana,
-SQL Server) jako osobny kontener w jednej sieci.
+Całość uruchomiona w Docker Compose — każdy komponent (Kafka, Flink, Kafka Connect,
+Elasticsearch, Kibana, Postgres) jako osobny kontener w jednej sieci.
 
 ## Źródło danych
 
