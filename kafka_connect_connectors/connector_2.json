@@ -10,8 +10,7 @@
     "auto.create": "true",
     "auto.evolve": "true",
     "insertion.mode": "insert",
-    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter.schemas.enable": "false",
-    "value.converter.schemas.infer.enable": "true"
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "http://schema-registry:8081"
   }
 }

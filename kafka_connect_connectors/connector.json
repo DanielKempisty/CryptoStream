@@ -6,6 +6,7 @@
     "topics": "processed_data",
     "connection.url": "http://elasticsearch:9200",
     "key.ignore": "true",
-    "schema.ignore": "true"
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "http://schema-registry:8081"
   }
 }
