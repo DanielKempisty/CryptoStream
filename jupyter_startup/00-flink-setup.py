@@ -10,4 +10,10 @@ table_env.get_config().set("parallelism.default", "1")
 
 @register_cell_magic
 def sql(line, cell):
-    table_env.execute_sql(cell).print()
+    result = table_env.execute_sql(cell)
+    if cell.strip().upper().startswith("INSERT"):
+        job_client = result.get_job_client()
+        if job_client:
+            print(f"Job submitted: {job_client.get_job_id()}")
+            return
+    result.print()
