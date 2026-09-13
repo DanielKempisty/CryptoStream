@@ -214,8 +214,10 @@ CRYPTO_STREAM_PROJECT/
 ## Znane decyzje architektoniczne (nie renegocjować bez wyraźnej prośby)
 
 - KRaft zamiast Zookeeper (Kafka 4.0+ nie wspiera już Zookeepera)
-- Trzy brokery Kafki (nie jeden, nie więcej) — mikro-klaster do nauki
-  replikacji/partycjonowania
+- Na razie **jeden broker Kafki** (uproszczenie na czas budowy MVP);
+  docelowo (po przejściu pełnego pipeline'u end-to-end) rozważane
+  rozszerzenie do mikro-klastra (np. 3 brokery) do nauki
+  replikacji/partycjonowania — decyzja odłożona, nie podjęta na stałe
 - Flink pisze wynik na wyjściowy topic Kafki, nie bezpośrednio do
   Elasticsearch/Postgresa. Fan-out do obu baz robi Kafka Connect
   (nie Flink). Powód: oficjalny konektor Elasticsearch dla Flinka
