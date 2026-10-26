@@ -1,4 +1,5 @@
 import asyncio
+import json
 import websockets
 import logging
 from confluent_kafka import Producer
@@ -14,8 +15,8 @@ def delivery_callback(err, msg):
         logger.info(f"Delivered to {msg.topic()} [{msg.partition()}] @ offset {msg.offset()}")
 
 
-def produce_to_kafka(producer, topic, message, callback_func):
-    producer.produce(topic, value=message.encode("utf-8"), callback=callback_func)
+def produce_to_kafka(producer, topic, key, message, callback_func):
+    producer.produce(topic, key=key.encode("utf-8") if key else None, value=message.encode("utf-8"), callback=callback_func)
     producer.poll(0)
 
 
@@ -32,7 +33,15 @@ async def connect_and_print(producer, uri):
                 async for raw_message in ws:
                     attempt = 0
 
-                    produce_to_kafka(producer, topic, raw_message, delivery_callback)
+                    try:
+                        key = json.loads(raw_message).get("data", {}).get("s")
+                    except json.JSONDecodeError:
+                        key = None
+
+                    if key is None:
+                        logger.warning(f"No symbol in message, sending without key: {raw_message}")
+
+                    produce_to_kafka(producer, topic, key, raw_message, delivery_callback)
 
         except (websockets.exceptions.ConnectionClosed, OSError):
             logger.warning("Trying to reconnect")
@@ -44,6 +53,6 @@ async def connect_and_print(producer, uri):
 producer = Producer({"bootstrap.servers": "localhost:9094"})
 
 try:
-    asyncio.run(connect_and_print(producer, "wss://stream.binance.com:9443/ws/btcusdt@trade"))
+    asyncio.run(connect_and_print(producer, "wss://stream.binance.com:9443/stream?streams=btcusdt@trade/ethusdt@trade/bnbusdt@trade/solusdt@trade/xrpusdt@trade"))
 finally:
     producer.flush()
