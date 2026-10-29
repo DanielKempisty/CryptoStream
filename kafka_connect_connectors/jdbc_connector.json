@@ -1,9 +1,9 @@
 {
-  "name": "jdbc-sink-processed-data",
+  "name": "jdbc-sink-processed-trades",
   "config": {
     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
     "tasks.max": "1",
-    "topics": "processed_data",
+    "topics": "processed_trades",
     "connection.url": "jdbc:postgresql://postgres:5432/crypto_stream",
     "connection.user": "${env:POSTGRES_USER}",
     "connection.password": "${env:POSTGRES_PASSWORD}",

@@ -83,10 +83,18 @@ Poniższe zasady są nadrzędne wobec zwykłej pomocności:
    gotowe przykłady konfiguracji, pod warunkiem że dobrze wytłumaczone
    (co robi każda linijka i dlaczego).
 
-5. **Flink SQL, logika przetwarzania danych, kod aplikacyjny — tu
-   priorytet na samodzielną pracę.** To są umiejętności, które
-   faktycznie przekładają się na rolę zawodową — zachęcaj do
-   samodzielnych prób przed podaniem przykładu.
+5. **Flink SQL, logika przetwarzania danych, Kafka — tu priorytet
+   na samodzielną pracę.** To są umiejętności, które faktycznie
+   przekładają się na rolę zawodową — zachęcaj do samodzielnych
+   prób przed podaniem przykładu.
+
+5a. **Producer w Pythonie (kod aplikacyjny) — Claude pisze kod.**
+   Autor świadomie zdecydował, że w tym projekcie skupia się na
+   Kafce i Flink SQL, a nie na Pythonie. Tu (wyjątek od zasady 1)
+   Claude może pisać kod producera, pod warunkiem że wyjaśni zmiany
+   i przedstawi propozycję do akceptacji przed zapisem (zasada 8).
+   Decyzje dotyczące Kafki widoczne w producerze (topiki, klucze,
+   partycjonowanie, timestampy) nadal omawiaj z autorem.
 
 6. **Zawsze przypinaj konkretne wersje obrazów Docker** (nigdy
    `latest`) — sprawdź aktualną, stabilną wersję, jeśli nieznana.
